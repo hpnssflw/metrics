@@ -8,14 +8,13 @@ import type { ExtractResult } from "@/types"
 
 interface Props {
   apiKey: string
+  objectId: string
   meterTypeId: string
   onExtracted: (result: ExtractResult) => void
   disabled?: boolean
 }
 
-const MAX_BYTES = 2 * 1024 * 1024
-
-export function ImageUploader({ apiKey, meterTypeId, onExtracted, disabled }: Props) {
+export function ImageUploader({ apiKey, objectId, meterTypeId, onExtracted, disabled }: Props) {
   const [preview, setPreview] = useState<string>("")
   const [base64, setBase64] = useState<string>("")
   const [loading, setLoading] = useState(false)
@@ -23,10 +22,6 @@ export function ImageUploader({ apiKey, meterTypeId, onExtracted, disabled }: Pr
   const inputRef = useRef<HTMLInputElement>(null)
 
   const processFile = (file: File) => {
-    if (file.size > MAX_BYTES) {
-      toast.error("Изображение слишком большое. Макс. 2МБ.")
-      return
-    }
     const reader = new FileReader()
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string
@@ -88,14 +83,14 @@ export function ImageUploader({ apiKey, meterTypeId, onExtracted, disabled }: Pr
               <Camera size={22} className="text-slate-400" />
             </div>
             <p className="text-sm text-slate-500 font-medium">Перетащите фото или нажмите для выбора</p>
-            <p className="text-xs text-slate-400">JPEG, PNG, HEIC · до 2МБ</p>
+            <p className="text-xs text-slate-400">JPEG, PNG, HEIC</p>
           </div>
         )}
       </div>
 
       <Button
         onClick={handleExtract}
-        disabled={!base64 || !meterTypeId || !apiKey || loading}
+        disabled={!base64 || !objectId || !meterTypeId || !apiKey || loading}
         className="w-full"
         size="lg"
       >
@@ -109,7 +104,10 @@ export function ImageUploader({ apiKey, meterTypeId, onExtracted, disabled }: Pr
       {!apiKey && (
         <p className="text-xs text-red-500 text-center font-medium">Сначала укажите API-ключ Gemini ↑</p>
       )}
-      {!meterTypeId && apiKey && (
+      {apiKey && !objectId && (
+        <p className="text-xs text-amber-600 text-center font-medium">Сначала выберите объект</p>
+      )}
+      {apiKey && objectId && !meterTypeId && (
         <p className="text-xs text-amber-600 text-center font-medium">Сначала выберите тип счётчика</p>
       )}
     </div>

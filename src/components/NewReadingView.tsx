@@ -74,9 +74,10 @@ export function NewReadingView() {
       <Card label="Фото счётчика">
         <ImageUploader
           apiKey={apiKey}
+          objectId={selectedObject?._id ?? ""}
           meterTypeId={selectedMeterType?._id ?? ""}
           onExtracted={handleExtracted}
-          disabled={!apiKey || !selectedMeterType}
+          disabled={!apiKey || !selectedObject || !selectedMeterType}
         />
       </Card>
 
